@@ -1,5 +1,4 @@
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -101,7 +100,6 @@ public class ComicVerseCRUD {
     public static ArrayList<String> obtenerComics() {
         ArrayList<String> comics = new ArrayList<>();
 
-        // Algunos cómics de tu frontend (comic_verse) + extra de prueba
         comics.add("Batman: The Killing Joke");
         comics.add("Spider-Man: Into the Spider-Verse");
         comics.add("X-Men: Dark Phoenix Saga");

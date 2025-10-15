@@ -22,6 +22,8 @@ public class ComicVerseCRUD {
             System.out.println("3. 🔎 Buscar cómic por nombre");
             System.out.println("4. ✏️ 🛠️ Actualizar cómic");
             System.out.println("5. 🗑️ ❌ Eliminar cómic");
+            System.out.println("6. 🛒 Crear Pedido de Comics");
+            System.out.println("7. 📦 Listar Pedidos de Comics");
             System.out.println("0. 🚪 Salir");
             System.out.print("\nSeleccione una opción: ");
 
@@ -38,6 +40,8 @@ public class ComicVerseCRUD {
                 case 3 -> buscarComicsPorNombre(comicsDB, entrada);
                 case 4 -> editarComic(comicsDB, entrada);
                 case 5 -> borrarComic(comicsDB, entrada);
+                case 6 -> enConstruccion("Crear Pedido");
+                case 7 -> enConstruccion("Listar Pedidos");
                 case 0 -> System.out.println("👋 ¡Gracias por usar ComicVerse CRUD!");
                 default -> System.out.println("⚠️ Opción inválida, intente nuevamente.");
             }
@@ -152,6 +156,10 @@ public class ComicVerseCRUD {
     }
 
 //================== UTILIDADES ==================
+
+    public static void enConstruccion(String nombreFuncion) {
+        System.out.println("🔧 La opción '" + nombreFuncion + "' está en desarrollo. ¡Próximamente disponible!");
+    }
 
     public static boolean estaIncluido(String nombreCompleto, String nombreParcial) {
 

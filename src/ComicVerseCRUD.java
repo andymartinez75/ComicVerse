@@ -7,9 +7,10 @@ public class ComicVerseCRUD {
 
     public static void main(String[] args) {
 
-        ArrayList<String> comicsDB = obtenerComics();
+        ArrayList<Comic> comicsDB = obtenerComics();
 
         Scanner entrada = new Scanner(System.in);
+        int idSiguiente = comicsDB.size() + 1;
         int opcionUsuario;
 
         do {
@@ -29,11 +30,14 @@ public class ComicVerseCRUD {
             entrada.nextLine();
 
             switch (opcionUsuario) {
-                case 1 -> crearComic(comicsDB,entrada);
+                case 1 -> {
+                    crearComic(idSiguiente, comicsDB, entrada);
+                    idSiguiente += 1;
+                }
                 case 2 -> listarComics(comicsDB);
-                case 3 -> buscarComicsPorNombre(comicsDB,entrada);
-                case 4 -> editarComic(comicsDB,entrada);
-                case 5 -> borrarComic(comicsDB,entrada);
+                case 3 -> buscarComicsPorNombre(comicsDB, entrada);
+                case 4 -> editarComic(comicsDB, entrada);
+                case 5 -> borrarComic(comicsDB, entrada);
                 case 0 -> System.out.println("👋 ¡Gracias por usar ComicVerse CRUD!");
                 default -> System.out.println("⚠️ Opción inválida, intente nuevamente.");
             }
@@ -42,23 +46,24 @@ public class ComicVerseCRUD {
 
     }
 
-   //Funciones Principales temporales con string
+    //Funciones Principales temporales con string
 
-    public static void crearComic(ArrayList<String> comics,Scanner entrada) {
+    public static void crearComic(int id, ArrayList<Comic> comics, Scanner entrada) {
 
         System.out.println("Creando Nuevo Comic");
         System.out.print("Ingrese el nombre del comic: ");
-        String nombreComic = entrada.nextLine();
+        String nombre = entrada.nextLine();
 
-        if (nombreComic.trim().isEmpty()) {
+        if (nombre.trim().isEmpty()) {
             System.out.println("⚠️ No puede ingresar un nombre vacío.");
             return;
         }
 
-        comics.add(nombreComic);
+        comics.add(new Comic(id, nombre));
         System.out.println("📖 Nuevo cómic creado con éxito!");
     }
-    public static void listarComics(ArrayList<String> comics) {
+
+    public static void listarComics(ArrayList<Comic> comics) {
         System.out.println("=======================================");
         System.out.println("       📚 LISTA DE COMICS ");
         System.out.println("=======================================");
@@ -66,60 +71,61 @@ public class ComicVerseCRUD {
         if (comics == null || comics.isEmpty()) {
             System.out.println("⚠️  No hay comics para mostrar.");
         } else {
-            int contador = 1;
-            for (String comic : comics) {
-                System.out.printf(" %2d. %s%n", contador++, comic);
+            for (Comic comic : comics) {
+                System.out.printf(" %2d. %s%n", comic.id, comic.nombre);
             }
         }
         System.out.println("📚 Mostrando lista de cómics...");
     }
-    public static void buscarComicsPorNombre(ArrayList<String> comics,Scanner entrada) {
+
+    public static void buscarComicsPorNombre(ArrayList<Comic> comics, Scanner entrada) {
 
         System.out.println("Ingrese el comic a buscar: ");
         String busqueda = entrada.nextLine();
-        ArrayList<String> comicsEncontrados = new ArrayList<>();
+        ArrayList<Comic> comicsEncontrados = new ArrayList<>();
 
-        for (String comic : comics) {
-            if (estaIncluido(comic, busqueda)) {
+        for (Comic comic : comics) {
+            if (estaIncluido(comic.nombre, busqueda)) {
                 comicsEncontrados.add(comic);
             }
         }
-
-        listarComics(comicsEncontrados);
-        System.out.println(" 🔎 Cómics encontrados...");
-    }
-    public static void editarComic(List<String> comics,Scanner entrada) {
-
-        int indiceComic = obtenerIdComic(comics, entrada);
-
-        if (indiceComic == -1) {
-            System.out.println("❌ No se pudo editar: cómic no encontrado.");
-            return;
+        if (comicsEncontrados.isEmpty()) {
+            System.out.println("⚠️ No se encontraron cómics que coincidan con la búsqueda: '" + busqueda + "'.");
+        } else {
+            listarComics(comicsEncontrados);
+            System.out.println("🔎 Cómics encontrados...");
         }
-        String comicOriginal = comics.get(indiceComic);
-        System.out.println("Comic a editar: "+comicOriginal);
+
+    }
+
+    public static void editarComic(List<Comic> comics, Scanner entrada) {
+
+        Comic comic = obtenerIdComic(comics, entrada);
+        if (comic == null) return;
+        String comicOriginal = comic.nombre;
+        System.out.println("Comic a editar: " + comicOriginal);
         System.out.println("Ingrese el nuevo nombre del comic: ");
-        String comicNuevo = entrada.nextLine();
+        String nuevoNombre = entrada.nextLine();
 
-        comics.set (indiceComic,comicNuevo);
+        comic.nombre = nuevoNombre;
         System.out.println("✏️ 🛠️ Actualizando cómic...");
-        System.out.printf("El nombre del comic cambio de %s a %s ",comicOriginal,comicNuevo);
+        System.out.printf("El nombre del comic cambio de %s a %s ", comicOriginal, nuevoNombre);
+        System.out.println();
 
 
     }
-    public static void borrarComic(List<String> comics,Scanner entrada) {
 
-        int indiceComic = obtenerIdComic(comics,entrada);
-        if (indiceComic == -1) {
-            System.out.println("❌ No se pudo eliminar: cómic no encontrado.");
-            return;
-        }
-        String comicOriginal = comics.get(indiceComic);
-        System.out.println("Comic a borrar: "+comicOriginal);
+    public static void borrarComic(List<Comic> comics, Scanner entrada) {
+
+        Comic comic = obtenerIdComic(comics, entrada);
+        if (comic == null) return;
+
+        String comicOriginal = comic.nombre;
+        System.out.println("Comic a borrar: " + comicOriginal);
         System.out.print("¿Confirma que desea eliminarlo? (s/n): ");
         String confirmacion = entrada.nextLine();
         if (confirmacion.equalsIgnoreCase("s")) {
-            comics.remove(indiceComic);
+            comics.remove(comic);
             System.out.printf("🗑️ El cómic '%s' fue eliminado.%n", comicOriginal);
         } else {
             System.out.println("❎ Eliminación cancelada.");
@@ -128,19 +134,19 @@ public class ComicVerseCRUD {
 
     //=============== DATOS INICIALES COMICS ===============
 
-    public static ArrayList<String> obtenerComics() {
-        ArrayList<String> comics = new ArrayList<>();
+    public static ArrayList<Comic> obtenerComics() {
+        ArrayList<Comic> comics = new ArrayList<>();
 
-        comics.add("Batman: The Killing Joke");
-        comics.add("Spider-Man: Into the Spider-Verse");
-        comics.add("X-Men: Dark Phoenix Saga");
-        comics.add("Superman: Red Son");
-        comics.add("Wonder Woman: Blood");
-        comics.add("The Flash: Rebirth");
-        comics.add("Avengers: Infinity Gauntlet");
-        comics.add("Iron Man: Extremis");
-        comics.add("Deadpool: Secret Invasion");
-        comics.add("Doctor Strange: The Oath");
+        comics.add(new Comic(1, "Batman: The Killing Joke"));
+        comics.add(new Comic(2, "Spider-Man: Into the Spider-Verse"));
+        comics.add(new Comic(3, "X-Men: Dark Phoenix Saga"));
+        comics.add(new Comic(4, "Superman: Red Son"));
+        comics.add(new Comic(5, "Wonder Woman: Blood"));
+        comics.add(new Comic(6, "The Flash: Rebirth"));
+        comics.add(new Comic(7, "Avengers: Infinity Gauntlet"));
+        comics.add(new Comic(8, "Iron Man: Extremis"));
+        comics.add(new Comic(9, "Deadpool: Secret Invasion"));
+        comics.add(new Comic(10, "Doctor Strange: The Oath"));
 
         return comics;
     }
@@ -148,28 +154,31 @@ public class ComicVerseCRUD {
 //================== UTILIDADES ==================
 
     public static boolean estaIncluido(String nombreCompleto, String nombreParcial) {
-        String nombreCompletoFormateado = formatoBusqueda(nombreCompleto);
 
-        return nombreCompletoFormateado.contains(formatoBusqueda(nombreParcial));
+        return formatoBusqueda(nombreCompleto).contains(formatoBusqueda(nombreParcial));
     }
 
     public static String formatoBusqueda(String texto) {
         return texto.trim().toLowerCase();
     }
 
-    public static int obtenerIdComic(List<String>comics,Scanner entrada){
-        System.out.print("Ingrese el nombre del cómic: ");
-        String busqueda = entrada.nextLine();
+    public static Comic obtenerIdComic(List<Comic> comics, Scanner entrada) {
 
-        for (String comic : comics) {
-            if (estaIncluido(comic, busqueda)) {
-                return comics.indexOf(comic);
+        System.out.print("Ingrese el id del cómic: ");
+        int idBusqueda = entrada.nextInt();
+        entrada.nextLine();
+
+        for (Comic comic : comics) {
+            if (comic.id == idBusqueda) {
+                return comic;
             }
         }
-
         System.out.println("⚠️ No se encontró ningún cómic con ese nombre.");
-        return -1;
-        }
+        return null;
     }
+}
+
+
+
 
 
